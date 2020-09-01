@@ -10,7 +10,7 @@ export default class extends AbstractView {
     async getHtml() {
         return `
             <h1>Post</h1>
-            <p>You are viewing post #${this.postID}. No content can be shown here yet.</p>
+            <p>You are viewing post #${this.postID}.</p>
         `;
     }
 }

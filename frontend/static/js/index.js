@@ -47,6 +47,20 @@ const router = async () => {
     const view = new match.route.view(getParams(match));
 
     document.querySelector("#app").innerHTML = await view.getHtml();
+    
+    //here my modification (if u want it :D)
+    document.querySelector("#app").innerHTML = await view.getHtml();
+    let isNotMuted = document.querySelectorAll(".headerBtn");
+    
+    // chech if the active link is equal to window.location.pathname
+    isNotMuted.forEach(element => {
+        if (window.location.pathname === element.pathname) {
+            element.classList.add('notMuted');
+            console.log("ça marche")
+        } else {
+            element.classList.remove('notMuted');
+        }
+    });
 };
 
 window.addEventListener("popstate", router);

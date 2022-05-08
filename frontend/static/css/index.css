@@ -22,7 +22,8 @@ body {
     font-weight: 500;
 }
 
-.nav__link:hover {
+.nav__link:hover,
+[data-active="route"]{
     background: rgba(255, 255, 255, 0.05);
 }
 

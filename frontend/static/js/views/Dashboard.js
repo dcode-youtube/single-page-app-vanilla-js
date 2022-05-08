@@ -1,12 +1,11 @@
-import AbstractView from "./AbstractView.js";
+import View from '../core/View.js';
 
-export default class extends AbstractView {
+export default class Dashboard extends View {
     constructor(params) {
         super(params);
-        this.setTitle("Dashboard");
     }
 
-    async getHtml() {
+    async render() {
         return `
             <h1>Welcome back, Dom</h1>
             <p>

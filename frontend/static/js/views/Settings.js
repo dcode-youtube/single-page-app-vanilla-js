@@ -1,12 +1,11 @@
-import AbstractView from "./AbstractView.js";
+import View from '../core/View.js';
 
-export default class extends AbstractView {
+export default class extends View {
     constructor(params) {
         super(params);
-        this.setTitle("Settings");
     }
 
-    async getHtml() {
+    async render() {
         return `
             <h1>Settings</h1>
             <p>Manage your privacy and configuration.</p>

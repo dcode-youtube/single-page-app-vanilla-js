@@ -1,12 +1,11 @@
-import AbstractView from "./AbstractView.js";
+import View from '../core/View.js';
 
-export default class extends AbstractView {
+export default class extends View {
     constructor(params) {
         super(params);
-        this.setTitle("Posts");
     }
 
-    async getHtml() {
+    async render() {
         return `
             <h1>Posts</h1>
             <p>You are viewing the posts!</p>

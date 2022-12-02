@@ -7,9 +7,20 @@ export default class extends AbstractView {
     }
 
     async getHtml() {
-        return `
-            <h1>Posts</h1>
-            <p>You are viewing the posts!</p>
-        `;
+        return new Promise(function(resolve, reject){
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', './static/js/views/Posts.html');
+            xhr.onload = function () {
+                if (this.status >= 200 && this.status < 300) {
+                    resolve(xhr.response);
+                } else {
+                    // reject();
+                }
+            };
+            xhr.onerror = function () {
+                // reject();
+            };
+            xhr.send();
+        });
     }
 }

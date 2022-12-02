@@ -1,8 +1,3 @@
-import Dashboard from "./views/Dashboard.js";
-import Posts from "./views/Posts.js";
-import PostView from "./views/PostView.js";
-import Settings from "./views/Settings.js";
-
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
 const getParams = match => {
@@ -21,10 +16,10 @@ const navigateTo = url => {
 
 const router = async () => {
     const routes = [
-        { path: "/", view: Dashboard },
-        { path: "/posts", view: Posts },
-        { path: "/posts/:id", view: PostView },
-        { path: "/settings", view: Settings }
+        { path: "/", viewName: 'Dashboard' },
+        { path: "/posts", viewName: 'Posts' },
+        { path: "/posts/:id", viewName: 'PostView' },
+        { path: "/settings", viewName: 'Settings' }
     ];
 
     // Test each route for potential match
@@ -43,7 +38,8 @@ const router = async () => {
             result: [location.pathname]
         };
     }
-
+    const viewObject = await import('./views/'+match.route.viewName+'.js');
+    match.route.view = viewObject.default;
     const view = new match.route.view(getParams(match));
 
     document.querySelector("#app").innerHTML = await view.getHtml();

@@ -14,7 +14,27 @@ const navigateTo = url => {
     router();
 };
 
-const router = async () => {
+const loadHTML = async (pathname) => {
+    return new Promise(function(resolve, reject){
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', './static/js/views/'+pathname+'.html');
+        xhr.onload = function () {
+            if (this.status >= 200 && this.status < 300) {
+                resolve(xhr.response);
+            } else {
+                // reject();
+            }
+        };
+        xhr.onerror = function () {
+            // reject();
+        };
+        xhr.send();
+    });
+};
+const router = async function() {
+    if (typeof this.customScope === 'undefined') {
+        this.customScope = {};
+    }
     const routes = [
         { path: "/", viewName: 'Dashboard' },
         { path: "/posts", viewName: 'Posts' },
@@ -38,12 +58,9 @@ const router = async () => {
             result: [location.pathname]
         };
     }
-    const viewObject = await import('./views/'+match.route.viewName+'.js');
-    match.route.view = viewObject.default;
-    const view = new match.route.view(getParams(match));
-
-    document.querySelector("#app").innerHTML = await view.getHtml();
-};
+    this.customScope[match.route.viewName] = typeof this.customScope[match.route.viewName] === 'undefined' ? await this.loadHTML(match.route.viewName) : this.customScope[match.route.viewName];
+    document.querySelector("#app").innerHTML = this.customScope[match.route.viewName]    
+}.bind( {'loadHTML': loadHTML} );
 
 window.addEventListener("popstate", router);
 

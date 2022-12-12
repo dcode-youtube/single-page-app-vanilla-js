@@ -14,10 +14,10 @@ const navigateTo = url => {
     router();
 };
 
-const loadHTML = async (pathname) => {
+const loadFile = async (pathname, ext) => {
     return new Promise(function(resolve, reject){
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', './static/js/views/'+pathname+'.html');
+        xhr.open('GET', './static/js/views/'+pathname+'.'+ext);
         xhr.onload = function () {
             if (this.status >= 200 && this.status < 300) {
                 resolve(xhr.response);
@@ -34,6 +34,9 @@ const loadHTML = async (pathname) => {
 const router = async function() {
     if (typeof this.customScope === 'undefined') {
         this.customScope = {};
+    }
+    if (typeof this.js === 'undefined') {
+        this.js = {};
     }
     const routes = [
         { path: "/", viewName: 'Dashboard' },
@@ -58,9 +61,28 @@ const router = async function() {
             result: [location.pathname]
         };
     }
-    this.customScope[match.route.viewName] = typeof this.customScope[match.route.viewName] === 'undefined' ? await this.loadHTML(match.route.viewName) : this.customScope[match.route.viewName];
-    document.querySelector("#app").innerHTML = this.customScope[match.route.viewName]    
-}.bind( {'loadHTML': loadHTML} );
+    
+    if (typeof window.currentObjects !== 'undefined') {
+        for (const cO in window.currentObjects) {
+            delete window[cO];
+        }
+    }
+
+    const _module = await import('./views/'+match.route.viewName+'.js')
+
+    window.currentObjects = _module[match.route.viewName];
+    for (const f in _module[match.route.viewName]) {
+        window[f] = _module[match.route.viewName][f];
+    }
+    if (typeof window.onInit !== 'undefined'){
+        window.onInit();
+    }
+    this.customScope[match.route.viewName] = typeof this.customScope[match.route.viewName] === 'undefined' ? await this.loadFile(match.route.viewName,'html') : this.customScope[match.route.viewName];
+    document.querySelector("#app").innerHTML = this.customScope[match.route.viewName]
+    if (typeof window.afterDOMLoad !== 'undefined'){
+        window.afterDOMLoad();
+    }
+}.bind( {'loadFile': loadFile} );
 
 window.addEventListener("popstate", router);
 
@@ -71,6 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
             navigateTo(e.target.href);
         }
     });
-
-    router();
+    
+    router();    
 });

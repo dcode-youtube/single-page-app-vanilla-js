@@ -1,15 +1,4 @@
-import AbstractView from "./AbstractView.js";
-
-export default class extends AbstractView {
-    constructor(params) {
-        super(params);
-        this.setTitle("Settings");
-    }
-
-    async getHtml() {
-        return `
-            <h1>Settings</h1>
-            <p>Manage your privacy and configuration.</p>
-        `;
-    }
-}
+export let Settings = {
+    'func1': function(event) { debugger; },
+    'func2': function() { alert('func2') }
+};

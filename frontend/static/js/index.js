@@ -57,12 +57,24 @@ const router = async function() {
 
     // let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
     let match = routes.find(r => {
+        let localPath = location.pathname.split('/').filter(aaa => { return aaa !== '' });
         let rSplit = r.path.split('/').filter(aaa => { return aaa !== '' });
         let colonIndices = rSplit.reduce((r, n, i) => {
             n.startsWith(':') && r.push(i);            
             return r;
           }, []);
-        let localPath = location.pathname.split('/').filter(aaa => { return aaa !== '' });
+        if(colonIndices.length > 0) {
+            r['data'] = [];
+        }
+        colonIndices.forEach(function(v, i, list){
+            let obj = {};
+            obj[this.rSplit[v].replaceAll(':', '')] = this.localPath[v];
+            r['data'].push(obj)
+        }.bind({
+            'rSplit': rSplit,
+            'localPath': localPath
+        }))
+        
         let localPathCheck = localPath.filter((elem, indx) => !colonIndices.includes(indx));
         let routeCheck = rSplit.filter(bb => { return !bb.startsWith(':') })
         if(localPathCheck.toLocaleString() === routeCheck.toLocaleString()) {
@@ -76,6 +88,8 @@ const router = async function() {
             result: [location.pathname]
         };
     }
+
+    window['currentRoute'] = match
     
     if (typeof window.currentObjects !== 'undefined') {
         for (const cO in window.currentObjects) {

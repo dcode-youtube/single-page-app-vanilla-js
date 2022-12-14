@@ -1,16 +1,14 @@
-import AbstractView from "./AbstractView.js";
-
-export default class extends AbstractView {
-    constructor(params) {
-        super(params);
-        this.postId = params.id;
-        this.setTitle("Viewing Post");
+export let PostView = {
+    'onInit': function() { 
+        console.log('Initiated!') 
+    },
+    'func10': function(event) { 
+        debugger; 
+    },
+    'func11': function() { 
+        console.log('func11') 
+    },
+    'afterDOMLoad': function() { 
+        console.log('DOM Loaded') 
     }
-
-    async getHtml() {
-        return `
-            <h1>Post</h1>
-            <p>You are viewing post #${this.postId}.</p>
-        `;
-    }
-}
+};

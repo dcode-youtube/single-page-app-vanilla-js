@@ -17,7 +17,7 @@ const navigateTo = url => {
 const loadFile = async (pathname, ext) => {
     return new Promise(function(resolve, reject){
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', './static/js/views/'+pathname+'.'+ext);
+        xhr.open('GET', window.location.origin + '/static/js/views/'+pathname+'.'+ext);
         xhr.onload = function () {
             if (this.status >= 200 && this.status < 300) {
                 resolve(xhr.response);
@@ -42,6 +42,8 @@ const router = async function() {
         { path: "/", viewName: 'Dashboard' },
         { path: "/posts", viewName: 'Posts' },
         { path: "/posts/:id", viewName: 'PostView' },
+        { path: "/dashboard/:id/:name", viewName: 'PostView' },
+        { path: "/posts/:id/:name", viewName: 'PostView' },
         { path: "/settings", viewName: 'Settings' }
     ];
 
@@ -53,7 +55,20 @@ const router = async function() {
         };
     });
 
-    let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
+    // let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
+    let match = routes.find(r => {
+        let rSplit = r.path.split('/').filter(aaa => { return aaa !== '' });
+        let colonIndices = rSplit.reduce((r, n, i) => {
+            n.startsWith(':') && r.push(i);            
+            return r;
+          }, []);
+        let localPath = location.pathname.split('/').filter(aaa => { return aaa !== '' });
+        let localPathCheck = localPath.filter((elem, indx) => !colonIndices.includes(indx));
+        let routeCheck = rSplit.filter(bb => { return !bb.startsWith(':') })
+        if(localPathCheck.toLocaleString() === routeCheck.toLocaleString()) {
+            return r;
+        }
+    });
 
     if (!match) {
         match = {
@@ -68,17 +83,17 @@ const router = async function() {
         }
     }
 
-    const _module = await import('./views/'+match.route.viewName+'.js')
+    const _module = await import('./views/'+match.viewName+'.js')
 
-    window.currentObjects = _module[match.route.viewName];
-    for (const f in _module[match.route.viewName]) {
-        window[f] = _module[match.route.viewName][f];
+    window.currentObjects = _module[match.viewName];
+    for (const f in _module[match.viewName]) {
+        window[f] = _module[match.viewName][f];
     }
     if (typeof window.onInit !== 'undefined'){
         window.onInit();
     }
-    this.customScope[match.route.viewName] = typeof this.customScope[match.route.viewName] === 'undefined' ? await this.loadFile(match.route.viewName,'html') : this.customScope[match.route.viewName];
-    document.querySelector("#app").innerHTML = this.customScope[match.route.viewName]
+    this.customScope[match.viewName] = typeof this.customScope[match.viewName] === 'undefined' ? await this.loadFile(match.viewName,'html') : this.customScope[match.viewName];
+    document.querySelector("#app").innerHTML = this.customScope[match.viewName]
     if (typeof window.afterDOMLoad !== 'undefined'){
         window.afterDOMLoad();
     }

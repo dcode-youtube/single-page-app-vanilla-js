@@ -84,8 +84,8 @@ const router = async function() {
 
     if (!match) {
         match = {
-            route: routes[0],
-            result: [location.pathname]
+            route: null,
+            viewName: '404'
         };
     }
 

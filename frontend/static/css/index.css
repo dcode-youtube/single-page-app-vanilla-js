@@ -27,7 +27,7 @@ body {
 }
 
 #app {
-    margin: 2em;
+    padding: 2em;
     line-height: 1.5;
     font-weight: 500;
 }
